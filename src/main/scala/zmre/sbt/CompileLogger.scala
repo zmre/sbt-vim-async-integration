@@ -32,12 +32,17 @@ class CompileLogger(val output: File, notify: () => Unit) extends BasicLogger {
     case _ => handleDebugMessage(message)
   }
 
-  def handleDebugMessage(message: String) =
+  def handleDebugMessage(message: String) = {
+    //println(s"*** Debug message $message")
     if (message.toLowerCase.contains("compilation failed")) {
-      notify()
+      //notify()
+    } else if (message.toLowerCase.startsWith("All initially invalidated sources")) {
+      clearLog()
     }
+  }
 
   def handleInfoMessage(message: String) = {
+    //println(s"*** Info message $message")
     if((message startsWith "Compiling") || (message startsWith "scalastyle using config")) {
       clearLog()
     } else ()
@@ -50,18 +55,25 @@ class CompileLogger(val output: File, notify: () => Unit) extends BasicLogger {
   }
 
   def handleWarnMessage(message: String) = {
+    //println(s"**Got warn: $message")
     numWarnings = numWarnings + 1
     append(output, "warn", message)
   }
 
-  def control(event: ControlEvent.Value, message: => String): Unit = ()
+  def control(event: ControlEvent.Value, message: => String): Unit = {
+    //println(s"** Got control event: $event ; message: $message")
+    ()
+  }
 
-  def logAll(events: Seq[LogEvent]): Unit = ()
+  def logAll(events: Seq[LogEvent]): Unit = {
+    //println(s"** Got logAll: $events")
+    ()
+  }
 
   def success(message: => String): Unit = {
-    //Got success message -- should probably clear out the log file?
-    // you'd think we'd clear here, but scalastyle gives a bogus success, so we
+    // Got success message -- should probably clear out the log, but scalastyle gives a bogus success, so we
     // have to count errors and warnings before deciding
+    //println(s"**Got success message $message but with numErrors: $numErrors and numWarnings: $numWarnings")
     if (numErrors == 0 && numWarnings == 0) {
       clearLog()
       notify()
@@ -69,6 +81,8 @@ class CompileLogger(val output: File, notify: () => Unit) extends BasicLogger {
   }
 
   def trace(t: => Throwable): Unit = ()
+
+  override def successEnabled = true
 
 }
 

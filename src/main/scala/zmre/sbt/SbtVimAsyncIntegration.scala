@@ -12,14 +12,18 @@ object SbtVimAsyncIntegrationPlugin extends AutoPlugin {
     // val quickFixDirectory = target in config("vim")
     val vimIntegrationLogDirectory = SettingKey[File]("vim-integration-logdir", "The folder where temporary log files will be written")
     val vimIntegrationExecutable = SettingKey[String]("vim-integration-executable", "The path to the vim executable")
+    val notifyVim = taskKey[Unit]("Notify vim on certain task completions")
   }
   import autoImport._
 
   override def trigger = allRequirements
 
+
   override val projectSettings = Seq(
+    notifyVim <<= Def.task {
+        SbtVimAsyncIntegration.notifyToRefresh(vimIntegrationExecutable.value)()
+    }.triggeredBy(compile in Compile).triggeredBy(test in Test),
     vimIntegrationLogDirectory in ThisBuild := baseDirectory.value / "target" / "vim",
-    // quickFixDirectory <<= target / "vim",
     extraLoggers <<= (extraLoggers, vimIntegrationLogDirectory, vimIntegrationExecutable) apply { (currentFunction, logdir, vimExec) =>
       (key: ScopedKey[_]) => {
         val loggers = currentFunction(key) // current list of loggers
