@@ -46,6 +46,7 @@ and then fire up vim and run `:BundleInstall`.
 ```bash
 > cd ~/.vim/bundle
 > git clone git@github.com:zmre/vim-scala-async-integration.git
+> git clone https://github.com/scrooloose/syntastic.git
 ```
 
 # Credits
