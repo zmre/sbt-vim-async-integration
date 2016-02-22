@@ -35,7 +35,7 @@ class CompileLogger(val output: File, notify: () => Unit) extends BasicLogger {
 
   def handleDebugMessage(message: String) = {
     if (message.toLowerCase.contains("compilation failed")) {
-      //notify()
+      notify()
     } else if (message.toLowerCase.contains("compilation finished")) {
       notify()
     } else if (message.toLowerCase.startsWith("All initially invalidated sources")) {
